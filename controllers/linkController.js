@@ -3,6 +3,7 @@ const ClickEvent = require("../models/ClickEvent");
 const responseHandler = require("../helper/responseHandler");
 const { StatusCodes } = require("http-status-codes");
 const generateId = require("../helper/generateId");
+const qr = require("qrcode");
 
 const ID_LENGTH = 6;
 
@@ -248,9 +249,54 @@ async function getLink(req, res) {
   );
 }
 
+async function getLinkQR(req, res) {
+  const alias = req.params.alias;
+  const link = await Link.findOne({
+    attributes: [
+      "expiresAt"
+    ],
+    where: {alias}
+  });
+  if (!link) {
+    responseHandler(
+      res,
+      StatusCodes.NOT_FOUND,
+      {
+        message: "No link found with the provided alias"
+      }
+    );
+  }
+  if (link.expiresAt && link.expiresAt <= Date.now()) {
+    return responseHandler(
+      res,
+      StatusCodes.GONE,
+      {
+        message: "The provided link is expired"
+      }
+    );
+  }
+
+  const qrBuffer = await qr.toBuffer(
+    `http://${process.env.DB_HOST}:${process.env.PORT}/${alias}`,
+    {
+      type: "png",
+      width: 300,
+      margin: 1
+    }
+  );
+
+  return responseHandler(
+    res,
+    StatusCodes.OK,
+    qrBuffer,
+    type="image"
+  );
+}
+
 module.exports = {
   insertLink,
   deleteLink,
   retrieveLinks,
-  getLink
+  getLink,
+  getLinkQR
 }

@@ -8,5 +8,6 @@ router.post("/", authenticate.authenticate, linkController.insertLink);
 router.delete("/:id", authenticate.authenticate, linkController.deleteLink);
 router.get("/", authenticate.authenticate, linkController.retrieveLinks);
 router.get("/:id", authenticate.authenticate, linkController.getLink);
+router.get("/:alias/qr", linkController.getLinkQR);
 
 module.exports = router;
