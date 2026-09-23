@@ -10,7 +10,11 @@ async function login(req, res) {
   const username = req.body.username;
   const password = req.body.password;  
   if (!username || !password) {
-    return responseHandler(res, StatusCodes.BAD_REQUEST, {message: "Username or password not provided"});
+    return responseHandler(
+      res, 
+      StatusCodes.BAD_REQUEST, 
+      {message: "Username or password not provided"}
+    );
   }
   try {
     const user = await User.findOne({
@@ -22,17 +26,33 @@ async function login(req, res) {
       where: {username}
     });
     if (!user) {
-      return responseHandler(res, StatusCodes.UNAUTHORIZED, {message: "Incorrect username"});
+      return responseHandler(
+        res, 
+        StatusCodes.UNAUTHORIZED, 
+        {message: "Incorrect username"}
+      );
     }
     const passwordCheck = await bcrypt.compare(password, user.passwordHash);
     if (!passwordCheck) {
-      return responseHandler(res, StatusCodes.UNAUTHORIZED, {message: "Incorrect password"});
+      return responseHandler(
+        res, 
+        StatusCodes.UNAUTHORIZED, 
+        {message: "Incorrect password"}
+      );
     }
     const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET, {expiresIn: "1h"});
-    return responseHandler(res, StatusCodes.OK, {user: {id: user.id, username: username}, token: token, message: "Logged in successfully"});
+    return responseHandler(
+      res, 
+      StatusCodes.OK, 
+      {user: {id: user.id, username: username}, token: token, message: "Logged in successfully"}
+    );
   } catch(err) {
     console.error(err);
-    return responseHandler(res, StatusCodes.UNAUTHORIZED, {message: "Login failed"})
+    return responseHandler(
+      res, 
+      StatusCodes.UNAUTHORIZED, 
+      {message: "Login failed"}
+    );
   }
 }
 
@@ -40,7 +60,11 @@ async function register(req, res) {
   const username = req.body.username;
   const password = req.body.password;
   if (!username || !password) {
-    return responseHandler(res, StatusCodes.BAD_REQUEST, {message: "Username or password not provided"});
+    return responseHandler(
+      res, 
+      StatusCodes.BAD_REQUEST, 
+      {message: "Username or password not provided"}
+    );
   }
   try {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -48,7 +72,11 @@ async function register(req, res) {
       where: {username}
     });
     if (isDup) {
-      return responseHandler(res, StatusCodes.CONFLICT, {message: "This username is taken"});
+      return responseHandler(
+        res, 
+        StatusCodes.CONFLICT, 
+        {message: "This username is taken"}
+      );
     }
     await User.create({
       username,
@@ -61,29 +89,37 @@ async function register(req, res) {
       ],
       where: {username}
     });
-    return responseHandler(res, StatusCodes.CREATED, {user, message: "User registered successfully"});
+    return responseHandler(
+      res, 
+      StatusCodes.CREATED, 
+      {user, message: "User registered successfully"}
+    );
   } catch(err) {
     console.error(err);
-    return responseHandler(res, StatusCodes.NOT_IMPLEMENTED, {message: "Faced an error handling your request"});
+    return responseHandler(
+      res, 
+      StatusCodes.NOT_IMPLEMENTED, 
+      {message: "Faced an error handling your request"}
+    );
+  }
+}
+
+async function getCurrentUser(req, res) {
+  const userId = req.user.userId;
+  const user = await User.findOne({
+    where: {userId}
+  });
+  if (!user) {
+    return responseHandler(
+      res,
+      StatusCodes.NOT_FOUND,
+      {}
+    );
   }
 }
 
 module.exports = {
   login,
-  register
+  register,
+  getCurrentUser
 };
-
-// headers
-// res helper
-// postman: clean collection reslts, login script for filling token env vriable
-
-// {
-//   status: 204,
-//   message: "Created succsndkfs",
-//   data: [
-//     {
-//       name: 'Alireza',
-//       age: 22
-//     }
-//   ]
-// }
