@@ -109,43 +109,30 @@ async function insertLink(req, res) {
   }
 }
 
-async function deleteLinkById(id, userId) {
+async function deleteLink(req, res) {
+  const userId = req.user.userId;
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return responseHandler(
+      res,
+      StatusCodes.BAD_REQUEST,
+      {
+        message: "ID must be an integer"
+      }
+    );
+  }
   const link = await Link.findOne({
     attributes: [
       "userId"
     ],
     where: {id}
   });
-  if (!link) {
-    return StatusCodes.NOT_FOUND;
-  }
-  if (link.userId !== userId) {
-    return StatusCodes.FORBIDDEN;
-  }
-  const deleted = await Link.destroy({
-    where: {id}
-  });
-  if (deleted > 0) {
-    return StatusCodes.NO_CONTENT;
-  } else {
-    return StatusCodes.NOT_FOUND;
-  }
-}
-
-async function deleteLinkByAlias(res, alias, userId) {
-  const link = await Link.findOne({
-    attributes: [
-      "userId"
-    ],
-    where: {alias}
-  });
-  console.log(link);
   if (!link) {
     return responseHandler(
       res,
       StatusCodes.NOT_FOUND,
       {
-        message: "No short link found with this alias/id"
+        message: "Requested link not found"
       }
     );
   }
@@ -154,12 +141,12 @@ async function deleteLinkByAlias(res, alias, userId) {
       res,
       StatusCodes.FORBIDDEN,
       {
-        message: "This user does not have access to delete the desired short link"
+        message: "User not allowed to remove the desired link"
       }
     );
   }
   const deleted = await Link.destroy({
-    where: {alias}
+    where: {id}
   });
   if (deleted > 0) {
     return responseHandler(
@@ -172,26 +159,10 @@ async function deleteLinkByAlias(res, alias, userId) {
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
       {
-        message: "Internal server error"
+        message: "Unable to delete the link"
       }
     );
   }
-}
-
-async function deleteLink(req, res) {
-  const userId = req.user.userId;
-  const value = req.params.value;
-  if (Number.isInteger(Number(value))) {
-    const status = await deleteLinkById(Number.parseInt(value), userId);
-    if (status === StatusCodes.NO_CONTENT) {
-      return responseHandler(
-        res, 
-        status,
-        {}
-      );
-    }
-  }
-  return deleteLinkByAlias(res, value, userId);
 }
 
 async function retrieveLinks(req, res) {
@@ -222,54 +193,59 @@ async function retrieveLinks(req, res) {
 
 async function getLink(req, res) {
   const userId = req.user.userId;
-  const value = req.params.value;
-  if (Number.isInteger(Number(value))) {
-    const link = await Link.findOne({
-      where: {id: value}
-    })
-    if (!link) {
-      return responseHandler(
-        res,
-        StatusCodes.NOT_FOUND,
-        {
-          message: "No link found with this id"
-        }
-      );
-    }
-    if (link.userId !== userId) {
-      return responseHandler(
-        res,
-        StatusCodes.UNAUTHORIZED,
-        {
-          message: "You do not have access to this link's information"
-        }
-      )
-    }
-    const clickEvent = await ClickEvent.findOne({
-      where: {linkId: link.id}
-    });
-    if (!clickEvent) {
-      return responseHandler(
-        res,
-        StatusCodes.OK,
-        {
-          link,
-          message: "Found link successfully. No click events have been recorded yet."
-        }
-      );
-    }
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return responseHandler(
+      res,
+      StatusCodes.BAD_REQUEST,
+      {
+        message: "ID must be an integer"
+      }
+    );
+  }
+  const link = await Link.findOne({
+    where: {id}
+  });
+  if (!link) {
+    return responseHandler(
+      res,
+      StatusCodes.NOT_FOUND,
+      {
+        message: "No link found with this id"
+      }
+    );
+  }
+  if (link.userId !== userId) {
+    return responseHandler(
+      res,
+      StatusCodes.UNAUTHORIZED,
+      {
+        message: "You do not have access to this link's information"
+      }
+    )
+  }
+  const clickEvent = await ClickEvent.findOne({
+    where: {linkId: id}
+  });
+  if (!clickEvent) {
     return responseHandler(
       res,
       StatusCodes.OK,
       {
         link,
-        clickEvent,
-        message: "Retrieved successfully."
+        message: "Found link successfully. No click events have been recorded yet."
       }
     );
-  } else {
-    
   }
+  return responseHandler(
+    res,
+    StatusCodes.OK,
+    {
+      link,
+      clickEvent,
+      message: "Retrieved successfully."
+    }
+  );
 }
 
 module.exports = {
