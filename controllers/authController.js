@@ -29,7 +29,7 @@ async function login(req, res) {
       return responseHandler(
         res,
         StatusCodes.UNAUTHORIZED,
-        {message: "Incorrect username"}
+        {message: "Incorrect username or password"}
       );
     }
     const passwordCheck = await bcrypt.compare(password, user.passwordHash);
@@ -37,7 +37,7 @@ async function login(req, res) {
       return responseHandler(
         res,
         StatusCodes.UNAUTHORIZED,
-        {message: "Incorrect password"}
+        {message: "Incorrect username or password"}
       );
     }
     const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET, {expiresIn: "1h"});
