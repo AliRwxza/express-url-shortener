@@ -4,10 +4,15 @@ var router = express.Router();
 var linkController = require('../controllers/linkController');
 var authenticate = require('../middleware/authenticate');
 
-router.post("/", authenticate.authenticate, linkController.insertLink);
-router.delete("/:id", authenticate.authenticate, linkController.deleteLink);
-router.get("/", authenticate.authenticate, linkController.retrieveLinks);
-router.get("/:id", authenticate.authenticate, linkController.getLink);
+/// Public routes
 router.get("/:alias/qr", linkController.getLinkQR);
+
+/// Private routes
+router.use(authenticate.authenticate);
+
+router.post("/", linkController.insertLink);
+router.delete("/:id", linkController.deleteLink);
+router.get("/", linkController.retrieveLinks);
+router.get("/:id", linkController.getLink);
 
 module.exports = router;
