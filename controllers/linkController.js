@@ -293,10 +293,67 @@ async function getLinkQR(req, res) {
   );
 }
 
+async function redirect(req, res) {
+  const alias = req.params.alias;
+
+  const url = await Link.findOne({
+    attributes: [
+      "id",
+      "url",
+      "expiresAt"
+    ],
+    where: {alias}
+  });
+
+  if (!url) {
+    return responseHandler(
+      res,
+      StatusCodes.NOT_FOUND,
+      {
+        message: "Invalid short link"
+      }
+    )
+  }
+  if (url.expiresAt && url.expiresAt < Date.now()) {
+    return responseHandler(
+      res,
+      StatusCodes.GONE,
+      {
+        message: "This short link is expired"
+      }
+    );
+  }
+  await ClickEvent.create({
+    linkId: url.id,
+    ipAddress: req.socket._peername.address,
+    userAgent: req.headers["user-agent"],
+    referrer: req.headers.referer
+  });
+  await Link.increment("clickCount", {
+    by: 1,
+    where: {
+      id: url.id
+    }
+  });
+
+  responseHandler(
+    res,
+    StatusCodes.MOVED_TEMPORARILY,
+    {
+      message: "Redirecting..."
+    },
+    "json",
+    {
+      Location: url.url
+    }
+  );
+}
+
 module.exports = {
   insertLink,
   deleteLink,
   retrieveLinks,
   getLink,
-  getLinkQR
+  getLinkQR,
+  redirect
 }
