@@ -16,6 +16,7 @@ function authenticate(req, res, next) {
   }
 
   const [type, token] = authHeader.split(' ');
+
   if (type !== "Bearer" || !token) {
     return responseHandler(
       res, 
@@ -25,6 +26,7 @@ function authenticate(req, res, next) {
       }
     );
   }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -40,6 +42,7 @@ function authenticate(req, res, next) {
           error: "Token expired"
         }
       );
+      
     } else if (err.name === "JsonWebTokenError") {
       return responseHandler(
         res,

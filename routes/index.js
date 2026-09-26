@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var linkController = require("../controllers/linkController");
 
-/* GET home page. */
+// Public routes
 router.get('/:alias', linkController.redirect);
 
 module.exports = router;

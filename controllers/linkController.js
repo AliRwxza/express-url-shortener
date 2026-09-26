@@ -17,6 +17,7 @@ async function insertLink(req, res) {
   const userId = req.user.userId;
   const givenAlias = req.body.alias;
   var alias;
+
   if (!url) {
     return responseHandler(
       res, 
@@ -24,6 +25,7 @@ async function insertLink(req, res) {
       {message: "URL not provided."}
     );
   }
+
   if (!givenAlias) {
     let repeat = 0;
     let genId;
@@ -37,12 +39,15 @@ async function insertLink(req, res) {
         break;
       }
     } 
+
   } else {
     alias = givenAlias;
   }
+
   const isDup = await Link.findOne({
     where: {alias}
   });
+
   if (!givenAlias && (!hasChar(alias) || isDup)) {
     return responseHandler(
       res,
@@ -52,6 +57,7 @@ async function insertLink(req, res) {
       }
     );
   }
+
   if (isDup) {
     return responseHandler(
       res,
@@ -61,6 +67,7 @@ async function insertLink(req, res) {
       }
     );
   }
+
   if (!hasChar(alias)) {
     return responseHandler(
       res,
@@ -70,6 +77,7 @@ async function insertLink(req, res) {
       }
     );
   }
+
   try {
     if (!expiry) {
       await Link.create({
@@ -77,6 +85,7 @@ async function insertLink(req, res) {
         url, 
         userId
       });
+
     } else {
       const expiresAt = new Date(Date.now() + expiry*1000);
       await Link.create({
@@ -86,20 +95,23 @@ async function insertLink(req, res) {
         expiresAt
       });
     }
+
     const data = await Link.findOne({
       where: {alias}
     });
-    const {id, ...returnLink} = data.toJSON();
+
     return responseHandler(
       res,
       StatusCodes.CREATED,
       {
-        link: returnLink,
+        link: data,
         message: "Short link created"
       }
     );
+
   } catch (err) {
     console.error(err);
+
     return responseHandler(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -113,6 +125,7 @@ async function insertLink(req, res) {
 async function deleteLink(req, res) {
   const userId = req.user.userId;
   const id = Number(req.params.id);
+
   if (!Number.isInteger(id)) {
     return responseHandler(
       res,
@@ -122,12 +135,14 @@ async function deleteLink(req, res) {
       }
     );
   }
+
   const link = await Link.findOne({
     attributes: [
       "userId"
     ],
     where: {id}
   });
+
   if (!link) {
     return responseHandler(
       res,
@@ -137,6 +152,7 @@ async function deleteLink(req, res) {
       }
     );
   }
+
   if (link.userId !== userId) {
     return responseHandler(
       res,
@@ -146,15 +162,18 @@ async function deleteLink(req, res) {
       }
     );
   }
+
   const deleted = await Link.destroy({
     where: {id}
   });
+
   if (deleted > 0) {
     return responseHandler(
       res,
       StatusCodes.NO_CONTENT,
       {}
     );
+
   } else {
     return responseHandler(
       res,
@@ -168,10 +187,12 @@ async function deleteLink(req, res) {
 
 async function retrieveLinks(req, res) {
   const userId = req.user.userId;
+
   try {
     const rows = await Link.findAll({
       where: {userId}
     });
+
     return responseHandler(
       res,
       StatusCodes.OK,
@@ -180,8 +201,10 @@ async function retrieveLinks(req, res) {
         message: "Links retrieved successfully"
       }
     )
+
   } catch (err) {
     console.error(err);
+
     return responseHandler(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
@@ -195,6 +218,7 @@ async function retrieveLinks(req, res) {
 async function getLink(req, res) {
   const userId = req.user.userId;
   const id = Number(req.params.id);
+
   if (!Number.isInteger(id)) {
     return responseHandler(
       res,
@@ -204,9 +228,11 @@ async function getLink(req, res) {
       }
     );
   }
+
   const link = await Link.findOne({
     where: {id}
   });
+
   if (!link) {
     return responseHandler(
       res,
@@ -216,6 +242,7 @@ async function getLink(req, res) {
       }
     );
   }
+
   if (link.userId !== userId) {
     return responseHandler(
       res,
@@ -225,9 +252,11 @@ async function getLink(req, res) {
       }
     )
   }
+
   const clickEvent = await ClickEvent.findOne({
     where: {linkId: id}
   });
+
   if (!clickEvent) {
     return responseHandler(
       res,
@@ -238,6 +267,7 @@ async function getLink(req, res) {
       }
     );
   }
+  
   return responseHandler(
     res,
     StatusCodes.OK,

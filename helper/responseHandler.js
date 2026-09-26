@@ -1,5 +1,6 @@
 function responseHandler(res, status, data, type="json", headers=null) {
   res.status(status);
+  
   if (headers) {
     res.set(headers);
   }
