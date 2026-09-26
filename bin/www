@@ -6,7 +6,6 @@
 
 var app = require('../app');
 var { initDB } = require("../config/database");
-require("../config/relations");
 
 var debug = require('debug')('express-url-shrt:server');
 var http = require('http');
@@ -24,11 +23,13 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-async function startServer() {
-  await initDB();
-}
+// async function startServer() {
+//   await initDB();
+// }
 
-startServer();
+// startServer();
+
+initDB();
 
 /**
  * Listen on provided port, on all network interfaces.

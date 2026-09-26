@@ -1,4 +1,3 @@
-const mysql = require("mysql2/promise");
 const {Sequelize} = require('sequelize');
 
 const sequelize = new Sequelize(
@@ -14,24 +13,11 @@ const sequelize = new Sequelize(
 );
 
 const initDB = async () => {
-  const rawConnection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-  });
-
-  await rawConnection.query(
-    `CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`
-  );
-
-  await rawConnection.end();
-  
   await sequelize.authenticate();
 
-  require("./relations");
-  console.log("connected to database");
+  require("../models");
 
-  // await sequelize.sync({ alter: true });
+  console.log("connected to database");
 }
 
 module.exports = {

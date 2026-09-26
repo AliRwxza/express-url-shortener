@@ -23,5 +23,8 @@
     "promise": "^8.3.0",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.5"
   }
 }
