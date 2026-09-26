@@ -258,7 +258,7 @@ async function getLinkQR(req, res) {
     where: {alias}
   });
   if (!link) {
-    responseHandler(
+    return responseHandler(
       res,
       StatusCodes.NOT_FOUND,
       {
