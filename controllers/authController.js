@@ -107,15 +107,31 @@ async function register(req, res) {
 async function getCurrentUser(req, res) {
   const userId = req.user.userId;
   const user = await User.findOne({
-    where: {userId}
+    attributes: [
+      "id",
+      "username",
+      "createdAt",
+      "updatedAt"
+    ],
+    where: {id: userId}
   });
   if (!user) {
     return responseHandler(
       res,
       StatusCodes.NOT_FOUND,
-      {}
+      {
+        message: "User not found"
+      }
     );
   }
+  return responseHandler(
+    res,
+    StatusCodes.OK,
+    {
+      user,
+      message: "User found successfully"
+    }
+  );
 }
 
 module.exports = {
