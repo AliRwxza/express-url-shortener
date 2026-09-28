@@ -6,8 +6,14 @@ block navbar
       a(href="/links/create").nav-item create a link
       a(href="/links/delete").nav-item delete a link
       a(href="/links/mylinks").nav-item display links
-      a(href="/links/10").nav-item display a link
-      a(href="/links/10/qr").nav-item get a qr code
+      form(method="GET", action="/links/search").nav-item
+        input(
+          type="text",
+          name="alias",
+          placeholder="Search link aliases"
+          required
+        ).nav-search
+        button(type="submit").nav-search-button Search
     
     .nav-right
       img(src="/images/avatar.png", alt="Avatar").nav-profile

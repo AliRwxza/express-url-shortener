@@ -258,6 +258,28 @@ async function displayQr(req, res, next) {
   });
 }
 
+async function searchLink(req, res) {
+  const {alias} = req.query;
+
+  if (!alias) {
+    return res.render("links/mylinks", {
+      error: "Enter an alias"
+    });
+  }
+
+  const link = await Link.findOne({
+    where: {alias}
+  });
+  
+  if (!link) {
+    return res.render("/links/mylinks", {
+      error: "Link not found"
+    });
+  }
+
+  return res.redirect("/links/" + link.alias + "/qr");
+}
+
 module.exports = {
   insertLink,
   showInsertLink,
@@ -266,5 +288,6 @@ module.exports = {
   showDeleteLink,
   deleteLink,
   displayLink,
-  displayQr
+  displayQr,
+  searchLink
 }

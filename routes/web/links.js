@@ -6,6 +6,7 @@ const {webAuth} = require('../../middleware/authenticate');
 
 // Public routes
 router.get("/:alias/qr", linkController.displayQr);
+router.get("/search", linkController.searchLink);
 
 // Private routes
 router.use(webAuth);
