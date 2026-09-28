@@ -1,4 +1,4 @@
-extends ../layout.pug
+extends ../layouts/layout.pug
 
 block content
   div.panel
@@ -13,7 +13,8 @@ block content
     form.form(method="POST", action="/links/delete")
 
       div.label(for="id") Link ID
-        input.form__input(
+      br
+      input.form__input(
           type="text",
           id="id",
           name="id",
@@ -21,4 +22,4 @@ block content
           required
         )
 
-        button.form__button(type="submit") Delete Link
+      button.form__button(type="submit") Delete Link

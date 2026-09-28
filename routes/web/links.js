@@ -4,6 +4,9 @@ const router = express.Router();
 const linkController = require('../../controllers/web/linkController');
 const {webAuth} = require('../../middleware/authenticate');
 
+// Public routes
+router.get("/:alias/qr", linkController.displayQr);
+
 // Private routes
 router.use(webAuth);
 
@@ -16,6 +19,5 @@ router.get("/delete", linkController.showDeleteLink);
 router.post("/delete", linkController.deleteLink);
 
 router.get("/:id", linkController.displayLink);
-router.get("/:alias/qr", linkController.displayQr);
 
 module.exports = router;
