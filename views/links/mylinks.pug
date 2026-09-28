@@ -1,0 +1,21 @@
+extends ../layout.pug
+
+block content 
+  h1 My Short Links
+
+  div.panel
+    if !links
+      p No links have been created so far
+
+    if error
+      p.error= error
+    
+    else
+      ul 
+        each link in links
+          li
+            a(href="/" + link.alias)= link.alias
+            span.link-list
+              |  → #{link.url}
+              | ID: #{link.id}
+            p Clicks: #{link.clickCount}

@@ -1,0 +1,19 @@
+extends ../layout.pug
+
+block content 
+  h1.form__title Delete one of your links
+
+  if error 
+    p.error= error 
+  
+  form(method="DELETE", action="/links/delete")
+
+    div
+      label(for="ID") Link ID
+      input.form__input(
+        type="",
+        id="url",
+        name="url",
+        placeholder="https://example.com",
+        required
+      )

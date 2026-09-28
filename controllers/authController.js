@@ -9,6 +9,7 @@ const SALT_ROUNDS = 10;
 async function login(req, res) {
   const username = req.body.username;
   const password = req.body.password;
+
   if (!username || !password) {
     return responseHandler(
       res,
@@ -16,6 +17,7 @@ async function login(req, res) {
       {message: "Username or password not provided"}
     );
   }
+
   try {
     const user = await User.findOne({
       attributes: [
@@ -25,6 +27,7 @@ async function login(req, res) {
       ],
       where: {username}
     });
+
     if (!user) {
       return responseHandler(
         res,
@@ -32,7 +35,9 @@ async function login(req, res) {
         {message: "Incorrect username or password"}
       );
     }
+
     const passwordCheck = await bcrypt.compare(password, user.passwordHash);
+
     if (!passwordCheck) {
       return responseHandler(
         res,
@@ -41,13 +46,16 @@ async function login(req, res) {
       );
     }
     const token = jwt.sign({userId: user.id}, process.env.JWT_SECRET, {expiresIn: "1h"});
+    
     return responseHandler(
       res,
       StatusCodes.OK,
       {user: {id: user.id, username: username}, token: token, message: "Logged in successfully"}
     );
+
   } catch(err) {
     console.error(err);
+
     return responseHandler(
       res,
       StatusCodes.UNAUTHORIZED,
@@ -59,6 +67,7 @@ async function login(req, res) {
 async function register(req, res) {
   const username = req.body.username;
   const password = req.body.password;
+
   if (!username || !password) {
     return responseHandler(
       res, 
@@ -66,11 +75,13 @@ async function register(req, res) {
       {message: "Username or password not provided"}
     );
   }
+
   try {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     const isDup = await User.findOne({
       where: {username}
     });
+    
     if (isDup) {
       return responseHandler(
         res,
@@ -78,24 +89,27 @@ async function register(req, res) {
         {message: "This username is taken"}
       );
     }
-    await User.create({
+
+    const user = await User.create({
       username,
       passwordHash
     });
-    const user = await User.findOne({
-      attributes: [
-        "id",
-        "username"
-      ],
-      where: {username}
-    });
+
     return responseHandler(
       res,
       StatusCodes.CREATED,
-      {user, message: "User registered successfully"}
+      {
+        user: {
+          id: user.id,
+          username: user.username
+        },
+        message: "User registered successfully"
+      }
     );
+
   } catch(err) {
     console.error(err);
+
     return responseHandler(
       res,
       StatusCodes.NOT_IMPLEMENTED,
@@ -115,6 +129,7 @@ async function getCurrentUser(req, res) {
     ],
     where: {id: userId}
   });
+
   if (!user) {
     return responseHandler(
       res,
@@ -124,6 +139,7 @@ async function getCurrentUser(req, res) {
       }
     );
   }
+
   return responseHandler(
     res,
     StatusCodes.OK,

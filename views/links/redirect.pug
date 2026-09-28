@@ -1,0 +1,10 @@
+extends ../layout.pug
+
+block headers
+  meta(http-equiv="refresh" content="0; url=" + url)
+
+block content
+  if error 
+    p.error= error 
+  | If not redirected, click on
+  a(href= url) Redirect

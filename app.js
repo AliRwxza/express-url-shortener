@@ -3,26 +3,39 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require("express-session");
 
 require('dotenv').config();
 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
-var linkRouter = require('./routes/links')
+var linkRouter = require('./routes/links');
+var webAuthRouter = require('./routes/web/auth');
+var webLinkRouter = require('./routes/web/links');
 
 var app = express();
 
+app.use(express.static('css'));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}));
 
 app.use('/', indexRouter);
+app.use('/auth', webAuthRouter);
+app.use('/links', webLinkRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/links', linkRouter);
 

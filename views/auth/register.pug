@@ -1,0 +1,34 @@
+extends ../layout.pug
+
+block content 
+  div.panel
+    h1.form__title Register
+
+    if error
+      p.error= error
+
+    form(method="POST", action="/register")
+      div
+        input.form__input(
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Username"
+          value=username
+          required
+        )
+
+      div
+        input.form__input(
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Password"
+          required
+        )
+
+      button.form__button(type="submit") Register
+
+    p
+      |Have an account? 
+      a(href="/auth/login") Login

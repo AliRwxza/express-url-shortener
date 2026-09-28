@@ -29,12 +29,15 @@ async function insertLink(req, res) {
   if (!givenAlias) {
     let repeat = 0;
     let genId;
+
     while (repeat++ < 10) {
       genId = generateId(ID_LENGTH);
+
       const isDup = await Link.findOne({
         where: {alias: genId}
       });
-      if (!isDup && /[a-zA-Z]/.test(genId)) {
+
+      if (!isDup && hasChar(genId)) {
         alias = genId;
         break;
       }
@@ -81,13 +84,14 @@ async function insertLink(req, res) {
   try {
     if (!expiry) {
       await Link.create({
-        alias, 
-        url, 
+        alias,
+        url,
         userId
       });
 
     } else {
       const expiresAt = new Date(Date.now() + expiry*1000);
+      
       await Link.create({
         alias,
         url,

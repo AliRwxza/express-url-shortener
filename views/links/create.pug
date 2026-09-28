@@ -1,0 +1,41 @@
+extends ../layout.pug
+
+block content
+  h1.form__title Create a short link
+
+  if error
+    p.error= error
+  
+  form(method="POST", action="/links/create")
+
+    div
+      label(for="url") URL
+      input.form__input(
+        type="url",
+        id="url",
+        name="url",
+        placeholder="https://example.com",
+        required
+      )
+    
+    div
+      label(for="alias") Custom Alias (optional) 
+      input.form__input(
+        type="text",
+        id="alias",
+        name="alias",
+        placeholder="CustomAlias123"
+      )
+    
+    div 
+      label(for="expiry") Expiration (in seconds, optional)
+      input.form__input(
+        type="number",
+        id="expiry",
+        name="expiry",
+        step="1",
+        min="0",
+        placeholder="3600"
+      )
+
+    button.form__button(type="submit") Create Link

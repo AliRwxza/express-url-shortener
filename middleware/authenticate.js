@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const responseHandler = require("../helper/responseHandler");
 const { StatusCodes } = require("http-status-codes");
 
 function authenticate(req, res, next) {
@@ -55,6 +54,15 @@ function authenticate(req, res, next) {
   }
 }
 
+function webAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/auth/login");
+  }
+
+  next();
+}
+
 module.exports = {
-  authenticate
+  authenticate,
+  webAuth
 }
