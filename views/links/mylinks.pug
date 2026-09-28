@@ -14,7 +14,7 @@ block content
       ul 
         each link in links
           li
-            a(href="/" + link.alias)= link.alias
+            a(href="/links/" + link.id)= link.alias
             span.link-list
               |  → #{link.url}
               | ID: #{link.id}

@@ -1,19 +1,24 @@
 extends ../layout.pug
 
-block content 
-  h1.form__title Delete one of your links
+block content
+  div.panel
+    h1.form__title Delete one of your links
 
-  if error 
-    p.error= error 
-  
-  form(method="DELETE", action="/links/delete")
+    if error 
+      p.error= error
+    
+    if confirm
+      p.confirm= confirm
+    
+    form.form(method="POST", action="/links/delete")
 
-    div
-      label(for="ID") Link ID
-      input.form__input(
-        type="",
-        id="url",
-        name="url",
-        placeholder="https://example.com",
-        required
-      )
+      div.label(for="id") Link ID
+        input.form__input(
+          type="text",
+          id="id",
+          name="id",
+          placeholder="15",
+          required
+        )
+
+        button.form__button(type="submit") Delete Link

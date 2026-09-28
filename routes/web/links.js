@@ -12,6 +12,9 @@ router.post("/create", linkController.insertLink);
 
 router.get("/mylinks", linkController.showLinks);
 
-router.delete("/delete/:id", linkController.deleteLink);
+router.get("/delete", linkController.showDeleteLink);
+router.post("/delete", linkController.deleteLink);
+
+router.get("/:id", linkController.displayLink);
 
 module.exports = router;

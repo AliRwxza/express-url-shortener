@@ -67,5 +67,10 @@ body {
 
 .link-list {
   display: flex;
-  flex-flow: row;
+  flex-flow: column;
+}
+
+.link-item {
+  width: 100%;
+  background-color: #c4c4c4;
 }

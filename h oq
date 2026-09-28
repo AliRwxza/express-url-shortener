@@ -1,0 +1,14 @@
+[33m4b5d9d2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m add simple front end and web controllers
+[33m0c19bfa[m add basic readme file
+[33m20c15e9[m[33m ([m[1;31morigin/main[m[33m)[m make login errors less verbose
+[33m3c1f87d[m add sequelize-cli migrations
+[33md3c7532[m clean the code
+[33mfa772d9[m complete current user api implementation
+[33mdb57d73[m remove unused file
+[33mfddb45d[m group middleware-using apis
+[33mb35a1bb[m fix small qr generation bug
+[33m4692e4e[m add redirect logic
+[33m4ffe0ea[m add QR code generation for short links
+[33mbc0c62b[m Add single link information retrieval by ID
+[33m0e1f81f[m complete authentication logic and links api implementations
+[33mb8f23a0[m initial commit

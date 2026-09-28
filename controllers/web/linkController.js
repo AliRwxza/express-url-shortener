@@ -21,14 +21,14 @@ async function redirect(req, res, next) {
     where: {alias: req.params.alias}
   });
   if (link) {
-    ClickEvent.create({
+    await ClickEvent.create({
       linkId: link.id,
       ipAddress: req.socket._peername.address,
       userAgent: req.headers["user-agent"],
       referrer: req.headers.referer
     });
     
-    Link.increment("clickCount", {
+    await Link.increment("clickCount", {
       by: 1,
       where: {
         id: link.id
@@ -38,7 +38,6 @@ async function redirect(req, res, next) {
     res.render("links/redirect", {
       url: link.url
     });
-    next();
   } else {
     next(createHttpError(404));
   }
@@ -151,20 +150,76 @@ async function showLinks(req, res) {
   }
 }
 
+function showDeleteLink(req, res, next) {
+  res.render("links/delete");
+}
+
 async function deleteLink(req, res, next) {
-  const id = req.params.alias;
+  console.log("We're here finally")
+  const {id} = req.body;
+
   if (!id) {
     next(createHttpError(404));
   }
+
   const link = await Link.findOne({
     where: {id}
   });
-  if (link.userId === req.session.user.id) {
-    await Link.destroy({
-      where: {id}
+
+  if (!link) {
+    res.render("/links/delete", {
+      error: "Not a valid link ID"
     });
-    next();
   }
+
+  if (link.userId !== req.session.user.id) {
+    res.render("/links/delete", {
+      error: "You are forbidden from deleting this link"
+    });
+  }
+
+  const deleted = await Link.destroy({
+    where: {id}
+  });
+
+  if (deleted === 0){
+    return res.render("/links/delete", {
+      error: "Unable to delete this link"
+    });
+  }
+  return res.status(204).render("/links/delete", {
+    confirm: "Link deleted successfully"
+  });
+}
+
+async function displayLink(req, res) {
+  const {id} = req.params;
+  const link = await Link.findOne({
+    where: {id}
+  });
+
+  if (!link) {
+    return res.status(404).render("/links/" + string(id), {
+      error: "Not a valid ID"
+    });
+  }
+
+  if (link.userId !== req.session.user.id) {
+    return res.status(403).render("/links/", {
+      error: "Your do not have access to this link"
+    });
+  }
+
+  const clickEvents = await ClickEvent.findAll({
+    where: {linkId: link.id}
+  });
+
+  console.log("Click event:", clickEvents);
+
+  return res.render("links/detail", {
+    link,
+    clickEvents
+  });
 }
 
 module.exports = {
@@ -172,5 +227,7 @@ module.exports = {
   showInsertLink,
   showLinks,
   redirect,
-  deleteLink
+  showDeleteLink,
+  deleteLink,
+  displayLink
 }
