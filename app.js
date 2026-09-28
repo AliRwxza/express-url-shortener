@@ -12,6 +12,7 @@ var authRouter = require('./routes/auth');
 var linkRouter = require('./routes/links');
 var webAuthRouter = require('./routes/web/auth');
 var webLinkRouter = require('./routes/web/links');
+var userRouter = require('./routes/web/users');
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use(
 app.use('/', indexRouter);
 app.use('/auth', webAuthRouter);
 app.use('/links', webLinkRouter);
+app.use('/users', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/links', linkRouter);
 

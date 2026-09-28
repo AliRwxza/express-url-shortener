@@ -1,7 +1,6 @@
 const {Link, ClickEvent} = require("../../models");
 const generateId = require("../../helper/generateId");
 const qr = require("qrcode");
-const { StatusCodes } = require("http-status-codes");
 const createHttpError = require("http-errors");
 
 const ID_LENGTH = 6;
