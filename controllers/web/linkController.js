@@ -48,7 +48,7 @@ async function insertLink(req, res) {
   const userId = req.session.user.id;
 
   if (!url) {
-    return res.status(StatusCodes.BAD_REQUEST).render("links/create", {
+    return res.render("links/create", {
       title: "Short Links",
       error: "No URL provided"
     });
@@ -80,21 +80,21 @@ async function insertLink(req, res) {
   });
 
   if (!givenAlias && (!hasChar(alias) || isDup)) {
-    return res.status(StatusCodes.SERVICE_UNAVAILABLE).render("links/create", {
+    return res.render("links/create", {
         title: "My Links",
         error: "Unable to generate an alias. Please try again later."
     });
   }
 
   if (isDup) {
-    return res.status(StatusCodes.CONFLICT).render("links/create", {
+    return res.render("links/create", {
       title: "My Links",
       error: "This alias is taken"
     });
   }
   
   if (!hasChar(alias)) {
-    return res.status(StatusCodes.BAD_REQUEST).render("links/create", {
+    return res.render("links/create", {
       title: "My Links",
       error: "Aliases must contain atleast one letter"
     });
@@ -122,14 +122,15 @@ async function insertLink(req, res) {
         where: {alias}
       });
 
-      return res.status(StatusCodes.CREATED).render("links/create", {
-        title: "My Short Links"
+      return res.render("links/create", {
+        title: "My Short Links",
+        confirm: "Created the link successfully"
       });
     }
   } catch (err) {
     console.error(err);
 
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render("links/create", {
+    return res.render("links/create", {
       title: "My short links"
     });
   }
@@ -155,7 +156,6 @@ function showDeleteLink(req, res, next) {
 }
 
 async function deleteLink(req, res, next) {
-  console.log("We're here finally")
   const {id} = req.body;
 
   if (!id) {
@@ -167,13 +167,13 @@ async function deleteLink(req, res, next) {
   });
 
   if (!link) {
-    res.render("/links/delete", {
+    return res.render("links/delete", {
       error: "Not a valid link ID"
     });
   }
 
   if (link.userId !== req.session.user.id) {
-    res.render("/links/delete", {
+    return res.render("links/delete", {
       error: "You are forbidden from deleting this link"
     });
   }
@@ -183,43 +183,47 @@ async function deleteLink(req, res, next) {
   });
 
   if (deleted === 0){
-    return res.render("/links/delete", {
+    return res.render("links/delete", {
       error: "Unable to delete this link"
     });
   }
-  return res.status(204).render("/links/delete", {
+  return res.render("links/delete", {
     confirm: "Link deleted successfully"
   });
 }
 
 async function displayLink(req, res) {
-  const {id} = req.params;
-  const link = await Link.findOne({
-    where: {id}
-  });
+  try {
+    const {id} = req.params;
+    const link = await Link.findOne({
+      where: {id}
+    });
 
-  if (!link) {
-    return res.status(404).render("/links/" + string(id), {
-      error: "Not a valid ID"
+    if (!link) {
+      return res.render("links/" + string(id), {
+        error: "Not a valid ID"
+      });
+    }
+
+    if (link.userId !== req.session.user.id) {
+      return res.render("links/", {
+        error: "Your do not have access to this link"
+      });
+    }
+
+    const clickEvents = await ClickEvent.findAll({
+      where: {linkId: link.id}
+    });
+
+    return res.render("links/detail", {
+      link,
+      clickEvents
+    });
+  } catch(err) {
+    res.render("error", {
+      error: err
     });
   }
-
-  if (link.userId !== req.session.user.id) {
-    return res.status(403).render("/links/", {
-      error: "Your do not have access to this link"
-    });
-  }
-
-  const clickEvents = await ClickEvent.findAll({
-    where: {linkId: link.id}
-  });
-
-  console.log("Click event:", clickEvents);
-
-  return res.render("links/detail", {
-    link,
-    clickEvents
-  });
 }
 
 async function displayQr(req, res, next) {
@@ -236,7 +240,7 @@ async function displayQr(req, res, next) {
   }
 
   if (link.expiresAt && link.expiresAt <= Date.now()) {
-    return res.status(410).render("/error");
+    return res.render("error");
   }
 
   const qrBuffer = await qr.toDataURL(
@@ -248,7 +252,7 @@ async function displayQr(req, res, next) {
     }
   );
 
-  return res.status(200).render("links/qr", {
+  return res.render("links/qr", {
     qrCode: qrBuffer,
     link
   });

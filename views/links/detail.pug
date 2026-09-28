@@ -18,8 +18,8 @@ block content
       if link.expiresAt
         p Expires at: #{link.expiresAt}
       
- 
-      p Events recorded for #{link.alias}
+      - const eventCount = clickEvents ? clickEvents.length : 0;
+      p Events recorded for #{link.alias}: #{eventCount}
       ul.link-list
         each event in clickEvents
           li

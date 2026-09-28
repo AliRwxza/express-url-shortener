@@ -1,9 +1,9 @@
 extends ../layout.pug
 
 block content 
-  h1 My Short Links
-
   div.panel
+    h1.form__title My Short Links
+
     if !links
       p No links have been created so far
 
@@ -11,11 +11,21 @@ block content
       p.error= error
     
     else
-      ul 
+      ul.link-list
         each link in links
           li
-            a(href="/links/" + link.id)= link.alias
-            span.link-list
+            
+            div.link-item
+              a(href="/links/" + link.id)= link.alias
               |  → #{link.url}
-              | ID: #{link.id}
-            p Clicks: #{link.clickCount}
+              br
+              | #[strong ID]: #{link.id}
+              br
+              | #[strong Clicks]: #{link.clickCount}
+              br
+              - const isExpired = link.expiresAt ? new Date(link.expiresAt).getTime() <= Date.now() : false
+              - const qrAddress = isExpired ? null : `/links/${link.alias}/qr`
+              if qrAddress 
+                a(href= qrAddress) Get Code
+              else
+                p.error Link expired.

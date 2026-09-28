@@ -1,13 +1,11 @@
-extends ../layout
+extends ../layout.pug
 
 block content
-  div.panel
+  div.panel.qr-page
     h1 QR Code
     
     div.qr-card
       img(src=qrCode alt="QR code for " + link.alias)
 
-    div.actions
-      a.btn(href=qrCode download=link.alias + "-qrcode.png") Download QR Code
-      //- | 
-      //- a.btn(href="/links/mylinks") Back to My Links
+    div
+      a(href=qrCode download=link.alias + "-qrcode.png") Download QR Code
