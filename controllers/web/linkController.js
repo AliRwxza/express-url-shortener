@@ -222,6 +222,38 @@ async function displayLink(req, res) {
   });
 }
 
+async function displayQr(req, res, next) {
+  const {alias} = req.params;
+  const link = await Link.findOne({
+    attributes: [
+      "expiresAt"
+    ],
+    where: {alias}
+  });
+
+  if (!link) {
+    return next(createHttpError(404));
+  }
+
+  if (link.expiresAt && link.expiresAt <= Date.now()) {
+    return res.status(410).render("/error");
+  }
+
+  const qrBuffer = await qr.toDataURL(
+    `http://${process.env.DB_HOST}:${process.env.PORT}/${alias}`,
+    {
+      type: "png",
+      width: 300,
+      margin: 1
+    }
+  );
+
+  return res.status(200).render("links/qr", {
+    qrCode: qrBuffer,
+    link
+  });
+}
+
 module.exports = {
   insertLink,
   showInsertLink,
@@ -229,5 +261,6 @@ module.exports = {
   redirect,
   showDeleteLink,
   deleteLink,
-  displayLink
+  displayLink,
+  displayQr
 }

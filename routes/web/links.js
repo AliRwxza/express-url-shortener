@@ -16,5 +16,6 @@ router.get("/delete", linkController.showDeleteLink);
 router.post("/delete", linkController.deleteLink);
 
 router.get("/:id", linkController.displayLink);
+router.get("/:alias/qr", linkController.displayQr);
 
 module.exports = router;
