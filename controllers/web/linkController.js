@@ -69,7 +69,7 @@ async function insertLink(req, res) {
         break;
       }
     }
-
+    console.log("Still repeating")
   } else {
     alias = givenAlias;
   }
@@ -77,6 +77,8 @@ async function insertLink(req, res) {
   const isDup = await Link.findOne({
     where: {alias}
   });
+
+  console.log("create a link isDup: ", isDup);
 
   if (!givenAlias && (!hasChar(alias) || isDup)) {
     return res.render("links/create", {
@@ -107,25 +109,29 @@ async function insertLink(req, res) {
         userId
       });
 
-    } else {
-      const expiresAt = new Date(Date.now() + expiry * 1000);
-
-      await Link.create({
-        alias,
-        url,
-        userId,
-        expiresAt
-      });
-
-      const data = await Link.findOne({
-        where: {alias}
-      });
-
       return res.render("links/create", {
         title: "My Short Links",
         confirm: "Created the link successfully"
       });
+
     }
+    const expiresAt = new Date(Date.now() + expiry * 1000);
+
+    await Link.create({
+      alias,
+      url,
+      userId,
+      expiresAt
+    });
+
+    const data = await Link.findOne({
+      where: {alias}
+    });
+
+    return res.render("links/create", {
+      title: "My Short Links",
+      confirm: "Created the link successfully"
+    });
   } catch (err) {
     console.error(err);
 

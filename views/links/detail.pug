@@ -10,7 +10,8 @@ block content
     else
       .detail-grid
         .detail-label Alias
-        .detail-value= link.alias
+        -const url = "http://localhost:3000/"+link.alias
+        a(href=url).detail-value= link.alias
 
         .detail-label Original URL
         .detail-value #[a(href=link.url)= link.url]
