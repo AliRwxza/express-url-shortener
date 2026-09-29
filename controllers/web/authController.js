@@ -97,9 +97,26 @@ async function register(req, res) {
   }
 }
 
+async function logout(req, res) {
+  try {
+    req.session.destroy();
+    res.clearCookie("connect.sid");
+
+    return res.redirect("/auth/login");
+  } catch(err) {
+    return res.render("error", {
+      err: {
+        status: 500,
+        message: err
+      }
+    });
+  }
+}
+
 module.exports = {
   showRegister,
   register,
   showLogin,
-  login
+  login,
+  logout
 }

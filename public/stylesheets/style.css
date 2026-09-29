@@ -33,6 +33,8 @@ body {
   border-radius: 14px;
   margin-top: 15px;
   max-width: 40%;
+
+  min-width: 15%;
 }
 
 .navbar {
@@ -196,4 +198,43 @@ body {
 
 .qr-page {
   padding: 40px 70px;
+}
+
+.detail-grid,
+.profile-grid,
+.link-item-grid {
+  display: grid;
+  
+  gap: 17px;
+}
+
+.profile-label,
+.detail-label,
+.link-item-label {
+  font-weight: bold;
+}
+
+
+.profile-grid {
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+}
+
+.detail-grid {
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto auto auto;
+}
+
+.link-item-grid {
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+}
+
+.error-page {
+  background-color: #da4f49;
+  padding: 30px 60px;
+}
+
+.error-msg {
+  align-self: center;
 }

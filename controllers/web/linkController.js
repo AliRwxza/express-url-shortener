@@ -129,8 +129,11 @@ async function insertLink(req, res) {
   } catch (err) {
     console.error(err);
 
-    return res.render("links/create", {
-      title: "My short links"
+    return res.render("error", {
+      err: {
+        status: 500,
+        message: err
+      }
     });
   }
 }
@@ -146,7 +149,12 @@ async function showLinks(req, res) {
         links
     });
   } catch(error) {
-      next(error);
+    return res.render("error", {
+      err: {
+        status: 500,
+        message: err
+      }
+    });
   }
 }
 
@@ -219,8 +227,11 @@ async function displayLink(req, res) {
       clickEvents
     });
   } catch(err) {
-    res.render("error", {
-      error: err
+    return res.render("error", {
+      err: {
+        status: 500,
+        message: err
+      }
     });
   }
 }
@@ -239,7 +250,12 @@ async function displayQr(req, res, next) {
   }
 
   if (link.expiresAt && link.expiresAt <= Date.now()) {
-    return res.render("error");
+    return res.render("error", {
+      err: {
+        status: 410,
+        message: "This short link has expired"
+      }
+    });
   }
 
   const qrBuffer = await qr.toDataURL(
@@ -271,8 +287,11 @@ async function searchLink(req, res) {
   });
   
   if (!link) {
-    return res.render("/links/mylinks", {
-      error: "Link not found"
+    return res.render("error", {
+      err: {
+        status: 404,
+        message: "Not a valid link"
+      }
     });
   }
 

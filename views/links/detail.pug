@@ -8,24 +8,34 @@ block content
       p.error= error
 
     else
-      p Alias: #{link.alias}
+      .detail-grid
+        .detail-label Alias
+        .detail-value= link.alias
 
-      p Original URL:
-        a(href=link.url)= link.url
+        .detail-label Original URL
+        .detail-value #[a(href=link.url)= link.url]
 
-      p Clicks: #{link.clickCount}
+        .detail-label Clicks
+        .detail-value= link.clickCount
 
-      if link.expiresAt
-        p Expires at: #{link.expiresAt}
-      
-      - const eventCount = clickEvents ? clickEvents.length : 0;
-      p Events recorded for #{link.alias}: #{eventCount}
+        - const expires = link.expiresAt || "never"
+        .detail-label Expires at
+        .detail-value= expires
+
+        - const eventCount = clickEvents ? clickEvents.length : 0;
+        .detail-label Events recorded
+        .detail-value= eventCount
       ul.link-list
         each event in clickEvents
           li
-            div.link-item
-              | #[strong IP]  #{event.ipAddress}
-              br
-              | #[strong Agent]  #{event.userAgent}
-              br
-              | #[strong Referer]  #{event.referrer}
+            div.link-item.link-item-grid
+
+              .link-item-label IP
+              .link-item-value= event.ipAddress
+
+              .link-item-label User 
+              .link-item-value= event.userAgent 
+
+              -const referrer = event.referrer || "None"
+              .link-item-label Referrer 
+              .link-item-value= referrer

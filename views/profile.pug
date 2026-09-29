@@ -1,9 +1,16 @@
+extends ./layouts/layout.pug
+
 block content
-  .panel
-    h1 Profile
+  h1.form__title Profile
+  div.panel.profile-grid
+    .profile-label #[strong Username]
+    .profile-value= user.username
 
-    p Username: #{user.username}
+    .profile-label #[strong Member since]
+    .profile-value= user.createdAt
 
-    p Member since: #{user.createdAt}
+    .profile-label #[strong Last updated]
+    .profile-value= user.updatedAt
 
-    p Last updated: #{user.updatedAt}
+    form(method="POST", action="/auth/logout")
+      button(type="submit") Logout

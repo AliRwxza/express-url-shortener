@@ -1,8 +1,9 @@
-doctype html
-html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    h2 komak
-    error= error
+extends ./layouts/layout
+
+block content
+  if err
+    .panel.error-page
+      h1.form__title= `Error ${err.status}`
+      br
+      .error-msg= err.message
+
